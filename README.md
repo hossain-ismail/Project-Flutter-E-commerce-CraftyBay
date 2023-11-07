@@ -30,7 +30,7 @@ Welcome to the CraftyBay repository! CraftyBay is your go-to e-commerce app, des
 
 
 ## Installation
-1. Clone this repository: `git clone [https://github.com/yourusername/ecommerce-app.git](https://github.com/hossain-eee/Project-Flutter-CraftyBay.git)`
+1. Clone this repository: `git clone https://github.com/hossain-eee/Project-Flutter-CraftyBay.git`
 2. Change to the project directory: `cd ecommerce-app`
 3. Install dependencies: `flutter pub get`
 4. Run the app: `flutter run`
