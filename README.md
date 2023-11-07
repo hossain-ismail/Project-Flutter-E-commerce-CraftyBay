@@ -2,7 +2,6 @@
 
 Welcome to the CraftyBay repository! CraftyBay is your go-to e-commerce app, designed to offer you a fantastic shopping experience. With a variety of features like product categorization, product reviews, and a seamless shopping cart, CraftyBay makes shopping a breeze.
 
-![App Screenshots](path-to-your-screenshot.png)
 
 ## Table of Contents
 - [Features](#features)
