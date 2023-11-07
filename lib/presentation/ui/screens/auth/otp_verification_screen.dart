@@ -24,6 +24,7 @@ class OTPVerificationScreen extends StatefulWidget {
 }
 
 class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   //otp controller
   final TextEditingController _otpTEController = TextEditingController();
   bool otpControllerAndReadProfileInProgress=false;
@@ -110,37 +111,47 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
               const SizedBox(
                 height: 24,
               ),
-              PinCodeTextField(
-                controller: _otpTEController,
-                length: 6,
-                obscureText: false,
-                animationType: AnimationType.fade,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                pinTheme: PinTheme(
-                  shape: PinCodeFieldShape.box,
-                  borderRadius: BorderRadius.circular(5),
-                  fieldHeight: 50,
-                  fieldWidth: 40,
-                  activeFillColor: Colors.white,
-                  inactiveFillColor: Colors.white,
-                  selectedFillColor: Colors.white,
-                  activeColor: AppColors.primaryColor,
-                  inactiveColor: AppColors.primaryColor,
-                  selectedColor: Colors.green,
-                ),
-                animationDuration: Duration(milliseconds: 300),
-                // backgroundColor: Colors.blue.shade50,
-                enableActiveFill: true,
-                // errorAnimationController: errorController,
-                // controller: textEditingController,
-                onCompleted: (v) {},
-                onChanged: (value) {},
-                beforeTextPaste: (text) {
-                  print("Allowing to paste $text");
+              Form(
+                key: _formKey,
+                child: PinCodeTextField(
+                  controller: _otpTEController,
+                  length: 6,
+                  obscureText: false,
+                  animationType: AnimationType.fade,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  pinTheme: PinTheme(
+                    shape: PinCodeFieldShape.box,
+                    borderRadius: BorderRadius.circular(5),
+                    fieldHeight: 50,
+                    fieldWidth: 40,
+                    activeFillColor: Colors.white,
+                    inactiveFillColor: Colors.white,
+                    selectedFillColor: Colors.white,
+                    activeColor: AppColors.primaryColor,
+                    inactiveColor: AppColors.primaryColor,
+                    selectedColor: Colors.green,
+                  ),
+                  animationDuration: Duration(milliseconds: 300),
+                  // backgroundColor: Colors.blue.shade50,
+                  enableActiveFill: true,
+                  // errorAnimationController: errorController,
+                  // controller: textEditingController,
+                  onCompleted: (v) {},
+                  onChanged: (value) {},
+                  beforeTextPaste: (text) {
+                    print("Allowing to paste $text");
 
-                  return true;
-                },
-                appContext: context,
+                    return true;
+                  },
+                  appContext: context,
+                  validator: (v) {
+                    if (v!.length < 6) {
+                      return "Please fill the otp box";
+                    } else {
+                      return null;
+                    }
+                  },
+                ),
               ),
               const SizedBox(
                 height: 16,
@@ -156,11 +167,16 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                       );
                   }
 
+
                   return ElevatedButton(
                     onPressed: () {
+                      if(!_formKey.currentState!.validate()){
+                        return;
+                      }
                       if(!(controller.otpVerificationInProgress && Get.find<ReadProfileController>().getProductInProgress)){
                         otpControllerAndReadProfileInProgress = true;
                       }
+
                       verifyOtp(controller);
                     },
                     child: const Text("Next"),
@@ -235,11 +251,15 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
 
           } else {
             if (mounted) {
+              otpControllerAndReadProfileInProgress = false;
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('otp verification failed! try again'),
                 ),
               );
+              setState(() {
+
+              });
             }
           }
         });
