@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../data/model/review_model.dart';
 import '../../state_holders/product_review_post_controller.dart';
 import '../utility/app_colors.dart';
-
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 class CreateReviewScreen extends StatefulWidget {
   const CreateReviewScreen({super.key, required this.getUserReview});
 
@@ -15,10 +16,9 @@ class CreateReviewScreen extends StatefulWidget {
 class _CreateReviewScreenState extends State<CreateReviewScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _reviewRatingTEC = TextEditingController();
-
   final TextEditingController _reviewDescriptionTEC = TextEditingController();
 
+  double userRatings = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -52,19 +52,31 @@ class _CreateReviewScreenState extends State<CreateReviewScreen> {
                 const SizedBox(
                   height: 50,
                 ),
-                //first name
-                TextFormField(
-                  controller: _reviewRatingTEC,
-                  decoration: const InputDecoration(
-                    hintText: 'rating between 0 to 5 ',
+
+                //rating
+                const Text('Please give your feedback',style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
+                SizedBox(height: 5,),
+                RatingBar.builder(
+                  initialRating: 0,
+                  minRating: 1,
+                  direction: Axis.horizontal,
+                  allowHalfRating: true,
+                  itemCount: 5,
+                  itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                  itemBuilder: (context, _) => Icon(
+                    Icons.star,
+                    color: Colors.amber,
                   ),
-                  validator: (String? value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Give rating';
-                    }
-                    return null;
+                  onRatingUpdate: (rating) {
+                    userRatings=rating;
+                    print(rating);
+                    setState(() {
+
+                    });
                   },
                 ),
+                Text('Rating : $userRatings',),
+
                 const SizedBox(
                   height: 15,
                 ),
@@ -90,41 +102,31 @@ class _CreateReviewScreenState extends State<CreateReviewScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: GetBuilder<ProductReviewPostController>(
-                    builder: (productReviewPostController) {
-                      if(productReviewPostController.productReviewInProgress){
-                        return Center(child: CircularProgressIndicator(),);
-                      }
-                      return ElevatedButton(
-                          onPressed: () {
-                            if(!_formKey.currentState!.validate()){
-                              return;
-                            }
-
-                            double reviewRating = double.tryParse(_reviewRatingTEC.text)!;
-                            if(reviewRating>5){
-                              reviewRating=5;
-                            }
-                            if(reviewRating.floor()<reviewRating){
-                              reviewRating =reviewRating.floor()+ 0.5;
-                            }
-
-                            widget.getUserReview(reviewRating.toString(),_reviewDescriptionTEC.text);
-                            productReviewPostController.postProductReview(_reviewDescriptionTEC.text,reviewRating.toString()).then((success){
-                              if(success){
-                                //clear the controller
-                                _reviewRatingTEC.clear();
-
-                                _reviewDescriptionTEC.clear();
+                      builder: (productReviewPostController) {
+                        if(productReviewPostController.productReviewInProgress){
+                          return Center(child: CircularProgressIndicator(),);
+                        }
+                        return ElevatedButton(
+                            onPressed: () {
+                              if(!_formKey.currentState!.validate()){
+                                return;
                               }
-                            });
+                              print("your review is : $userRatings");
 
+                              widget.getUserReview(userRatings.toString(),_reviewDescriptionTEC.text);
+                              productReviewPostController.postProductReview(_reviewDescriptionTEC.text,userRatings.toString()).then((success){
+                                if(success){
+                                  //clear the controller
+                                  _reviewDescriptionTEC.clear();
+                                }
+                              });
 
+                              setState(() {
 
-                            setState(() {
+                              });
 
-                            });
-                          }, child: const Text('Submit'));
-                    }
+                            }, child: const Text('Submit'));
+                      }
                   ),
                 )
               ],
@@ -135,13 +137,11 @@ class _CreateReviewScreenState extends State<CreateReviewScreen> {
     );
   }
   //if user review attempt fail and back then we need to clear the controller
-@override
+  @override
   void dispose() {
-  print("value of controller is : ${_reviewRatingTEC.text}");
-  //clear the controller
-  _reviewRatingTEC.clear();
-  _reviewDescriptionTEC.clear();
-  print("value of controller is : ${_reviewRatingTEC.text}");
+    //clear the controller
+    _reviewDescriptionTEC.clear();
+
     super.dispose();
   }
 
