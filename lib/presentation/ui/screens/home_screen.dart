@@ -89,6 +89,17 @@ class _HomeScreenState extends State<HomeScreen> {
               print("Logout");
               AuthController.clear();
               print("Is login : ${AuthController.isLoggedIn}");
+              /* ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Logout'),
+                ),
+              );*/
+              Get.snackbar(
+                'Logout',
+                'You have Logged out',
+                snackPosition: SnackPosition.BOTTOM,
+
+              );
               setState(() {
 
               });
